@@ -26,7 +26,7 @@ const client = new MongoClient(uri, {
   }
 });
 
-const recipeCollection = client.db('recipeDB').collection('recipe')
+const recipeCollection = client.db('jobTaskDB').collection('BreakpointArt')
 
 async function run() {
   try {
@@ -34,6 +34,18 @@ async function run() {
     // await client.connect();
     // Send a ping to confirm a successful connection
 
+    app.get('/all-recipe', async (req, res) => {
+      const result = await recipeCollection.find().toArray();
+      res.send(result)
+    })
+
+
+    app.put('/recipe', async (req, res) => {
+      const recipe = req.body;
+      // console.log(recipe);
+      const result = await recipeCollection.insertOne(recipe)
+      res.send(result)
+    })
 
 
 

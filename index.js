@@ -9,6 +9,9 @@ app.use(cors({
   origin: [
     'http://localhost:5173',
     'http://localhost:5174',
+    'https://breakpointart-recipe-task.web.app',
+    'https://breakpointart-recipe-task.firebaseapp.com/'
+
   ],
 
 }))
@@ -37,18 +40,18 @@ async function run() {
     app.get('/all-recipe', async (req, res) => {
       const searchQuery = req.query.search;
       const regex = new RegExp(searchQuery, 'i');
-  
+
       const result = await recipeCollection.find({
         $or: [
           { title: { $regex: regex } },
           { ingredients: { $elemMatch: { $regex: regex } } },
         ],
       }).toArray();
-  
+
       res.send(result);
     })
 
-    
+
     app.get('/recipe-details/:id', async (req, res) => {
       const id = req.params.id
       console.log(id);

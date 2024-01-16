@@ -38,6 +38,13 @@ async function run() {
       const result = await recipeCollection.find().toArray();
       res.send(result)
     })
+    app.get('/recipe-details/:id', async (req, res) => {
+      const id = req.params.id
+      console.log(id);
+      const filter = {_id: new ObjectId(id)}
+      const result = await recipeCollection.findOne(filter);
+      res.send(result)
+    })
 
 
     app.put('/recipe', async (req, res) => {
@@ -45,6 +52,16 @@ async function run() {
       // console.log(recipe);
       const result = await recipeCollection.insertOne(recipe)
       res.send(result)
+    })
+
+
+    app.delete('/recipe/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const query = { _id: new ObjectId(id) }
+      const result = await recipeCollection.deleteOne(query)
+      res.send(result)
+
     })
 
 

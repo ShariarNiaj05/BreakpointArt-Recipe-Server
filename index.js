@@ -35,13 +35,24 @@ async function run() {
     // Send a ping to confirm a successful connection
 
     app.get('/all-recipe', async (req, res) => {
-      const result = await recipeCollection.find().toArray();
-      res.send(result)
+      const searchQuery = req.query.search;
+      const regex = new RegExp(searchQuery, 'i');
+  
+      const result = await recipeCollection.find({
+        $or: [
+          { title: { $regex: regex } },
+          { ingredients: { $elemMatch: { $regex: regex } } },
+        ],
+      }).toArray();
+  
+      res.send(result);
     })
+
+    
     app.get('/recipe-details/:id', async (req, res) => {
       const id = req.params.id
       console.log(id);
-      const filter = {_id: new ObjectId(id)}
+      const filter = { _id: new ObjectId(id) }
       const result = await recipeCollection.findOne(filter);
       res.send(result)
     })
@@ -53,6 +64,33 @@ async function run() {
       const result = await recipeCollection.insertOne(recipe)
       res.send(result)
     })
+
+
+    app.put('/tasks', async (req, res) => {
+      const task = req.body;
+      const result = await taskCollection.insertOne(task)
+      res.send(result)
+    })
+
+
+    app.put('/update-recipe/:id', async (req, res) => {
+      const id = req.params.id
+      const query = { _id: new ObjectId(id) }
+      const body = req.body;
+      // console.log('Received body:', body);
+
+      // console.log( query, body);
+      const updatedRecipe = {
+        $set: {
+          ...body
+        }
+      }
+      const option = { upsert: true }
+      const result = await recipeCollection.updateOne(query, updatedRecipe, option)
+      // console.log(result);
+      res.send(result)
+    })
+
 
 
     app.delete('/recipe/:id', async (req, res) => {
